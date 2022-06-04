@@ -23,6 +23,7 @@ export default function App() {
     return `${month}월 ${day}일`;
   };
   const [working, setWorking] = useState(true);
+  const [complete, setComplete] = useState(true);
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({});
   const travel = () => setWorking(false);
@@ -42,7 +43,7 @@ export default function App() {
     if (text === "") {
       return;
     }
-    const newToDos = { ...toDos, [Date.now()]: { text, working } };
+    const newToDos = { ...toDos, [Date.now()]: { text, working, complete } };
     setToDos(newToDos);
     saveToDos(newToDos);
     setText("");
@@ -65,6 +66,13 @@ export default function App() {
         },
       ]
     );
+  };
+  const completeToDo = (key) => {
+    const newToDos = { ...toDos };
+    setComplete((prev) => !prev);
+    newToDos[key].complete = complete;
+    setToDos(newToDos);
+    saveToDos(newToDos);
   };
   return (
     <View style={styles.container}>
@@ -105,6 +113,13 @@ export default function App() {
           toDos[key].working === working ? (
             <View style={styles.toDo} key={key}>
               <Text style={styles.toDoText}>{toDos[key].text}</Text>
+              <TouchableOpacity onPress={() => completeToDo(key)}>
+                {toDos[key].complete ? (
+                  <Fontisto name="checkbox-passive" size={18} color="white" />
+                ) : (
+                  <Fontisto name="checkbox-active" size={18} color="white" />
+                )}
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => deleteToDo(key)}>
                 <Fontisto name="trash" size={18} color="white" />
               </TouchableOpacity>
