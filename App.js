@@ -111,7 +111,10 @@ export default function App() {
       <ScrollView>
         {Object.keys(toDos).map((key) =>
           toDos[key].working === working ? (
-            <View style={styles.toDo} key={key}>
+            <View
+              style={toDos[key].complete ? styles.yestoDo : styles.nottoDo}
+              key={key}
+            >
               <Text style={styles.toDoText}>{toDos[key].text}</Text>
               <TouchableOpacity onPress={() => completeToDo(key)}>
                 {toDos[key].complete ? (
@@ -165,10 +168,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 18,
   },
-  toDo: {
+  yestoDo: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     backgroundColor: theme.grey,
+    marginBottom: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+  },
+  nottoDo: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    opacity: 1,
     marginBottom: 10,
     paddingVertical: 20,
     paddingHorizontal: 20,
