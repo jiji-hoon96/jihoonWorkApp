@@ -55,11 +55,10 @@ export default function App() {
     setText("");
   };
   const onEditSubmit = async (key) => {
-    const newToDos = { ...toDos };
-    delete newToDos[key];
     if (editvalue === "") {
       return;
     }
+    delete toDos[key];
     const newEditToDos = {
       ...toDos,
       [Date.now()]: { text: editvalue, working, complete, edit },
@@ -161,7 +160,7 @@ export default function App() {
               {toDos[key].edit ? (
                 <TextInput
                   style={styles.editinput}
-                  onSubmitEditing={() => onEditSubmit(toDos[key])}
+                  onSubmitEditing={() => onEditSubmit(key)}
                   onChangeText={onEditText}
                   returnKeyType="done"
                   placeholder="수정할 내용을 입력해주세요"
