@@ -16,6 +16,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const STORAGE_KEY = "@toDos";
 
 export default function App() {
+  let date = new Date();
+  let month = ("0" + (1 + date.getMonth())).slice(-2);
+  let day = ("0" + date.getDate()).slice(-2);
+  const gettitleToday = () => {
+    return `${month}월 ${day}일`;
+  };
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({});
@@ -62,20 +68,23 @@ export default function App() {
   };
   return (
     <View style={styles.container}>
+      <View style={styles.titlebox}>
+        <Text style={styles.title}>JIPLAN</Text>
+      </View>
       <StatusBar style="auto" />
       <View style={styles.header}>
         <TouchableOpacity onPress={work}>
           <Text
             style={{ ...styles.btnText, color: working ? "white" : theme.grey }}
           >
-            Work
+            Today Plan
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={travel}>
           <Text
             style={{ ...styles.btnText, color: working ? theme.grey : "white" }}
           >
-            Travel
+            Memo
           </Text>
         </TouchableOpacity>
       </View>
@@ -85,7 +94,9 @@ export default function App() {
         returnKeyType="done"
         value={text}
         placeholder={
-          working ? "할 일을 적어주세요" : "가고싶은 여행지를 입력해주세요"
+          working
+            ? `${gettitleToday()} 계획을 적어주세요`
+            : "메모를 입력해주세요"
         }
         style={styles.input}
       />
@@ -106,6 +117,15 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    color: "white",
+    fontSize: 50,
+    marginTop: 80,
+  },
+  titlebox: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
     backgroundColor: theme.bg,
@@ -114,10 +134,10 @@ const styles = StyleSheet.create({
   header: {
     justifyContent: "space-between",
     flexDirection: "row",
-    marginTop: 100,
+    marginTop: 60,
   },
   btnText: {
-    fontSize: 44,
+    fontSize: 32,
     fontWeight: "600",
     color: "white",
   },
