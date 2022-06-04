@@ -31,6 +31,7 @@ export default function App() {
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
   const onChangeText = (payload) => setText(payload);
+  const onEditText = (editpayload) => setEditValue(editpayload);
   const saveToDos = async (toSave) => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   };
@@ -53,6 +54,21 @@ export default function App() {
     saveToDos(newToDos);
     setText("");
   };
+  const onEditSubmit = async (key) => {
+    const newToDos = { ...toDos };
+    delete newToDos[key];
+    if (editvalue === "") {
+      return;
+    }
+    const newEditToDos = {
+      ...toDos,
+      [Date.now()]: { text: editvalue, working, complete, edit },
+    };
+    setToDos(newEditToDos);
+    saveToDos(newEditToDos);
+    setEditValue("");
+  };
+
   const deleteToDo = (key) => {
     Alert.prompt(
       "작성하신 내용을 지우시겠습니까?",
@@ -83,10 +99,8 @@ export default function App() {
     const newToDos = { ...toDos };
     setEdit((prev) => !prev);
     newToDos[key].edit = edit;
-    console.log(newToDos[key].edit);
-    //newToDos[key].edit =
   };
-  console.log(toDos);
+
   return (
     <View style={styles.container}>
       <View style={styles.titlebox}>
@@ -147,10 +161,9 @@ export default function App() {
               {toDos[key].edit ? (
                 <TextInput
                   style={styles.editinput}
-                  onSubmitEditing={addToDo}
-                  onChangeText={onChangeText}
+                  onSubmitEditing={() => onEditSubmit(toDos[key])}
+                  onChangeText={onEditText}
                   returnKeyType="done"
-                  value={editvalue}
                   placeholder="수정할 내용을 입력해주세요"
                 />
               ) : null}
