@@ -24,6 +24,8 @@ export default function App() {
   };
   const [working, setWorking] = useState(true);
   const [complete, setComplete] = useState(true);
+  const [edit, setEdit] = useState(false);
+  const [editvalue, setEditValue] = useState("");
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({});
   const travel = () => setWorking(false);
@@ -38,12 +40,15 @@ export default function App() {
   };
   useEffect(() => {
     loadToDos();
-  }, []);
+  }, [working]);
   const addToDo = async () => {
     if (text === "") {
       return;
     }
-    const newToDos = { ...toDos, [Date.now()]: { text, working, complete } };
+    const newToDos = {
+      ...toDos,
+      [Date.now()]: { text, working, complete, edit },
+    };
     setToDos(newToDos);
     saveToDos(newToDos);
     setText("");
@@ -74,6 +79,14 @@ export default function App() {
     setToDos(newToDos);
     saveToDos(newToDos);
   };
+  const editToggle = (key) => {
+    const newToDos = { ...toDos };
+    setEdit((prev) => !prev);
+    newToDos[key].edit = edit;
+    console.log(newToDos[key].edit);
+    //newToDos[key].edit =
+  };
+  console.log(toDos);
   return (
     <View style={styles.container}>
       <View style={styles.titlebox}>
@@ -115,17 +128,32 @@ export default function App() {
               style={toDos[key].complete ? styles.yestoDo : styles.nottoDo}
               key={key}
             >
-              <Text style={styles.toDoText}>{toDos[key].text}</Text>
-              <TouchableOpacity onPress={() => completeToDo(key)}>
-                {toDos[key].complete ? (
-                  <Fontisto name="checkbox-passive" size={18} color="white" />
-                ) : (
-                  <Fontisto name="checkbox-active" size={18} color="white" />
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => deleteToDo(key)}>
-                <Fontisto name="trash" size={18} color="white" />
-              </TouchableOpacity>
+              <View style={styles.textinput}>
+                <Text style={styles.toDoText}>{toDos[key].text}</Text>
+                <TouchableOpacity onPress={() => editToggle(key)}>
+                  <Fontisto name="arrow-down" size={18} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => completeToDo(key)}>
+                  {toDos[key].complete ? (
+                    <Fontisto name="checkbox-passive" size={18} color="white" />
+                  ) : (
+                    <Fontisto name="checkbox-active" size={18} color="white" />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => deleteToDo(key)}>
+                  <Fontisto name="trash" size={18} color="white" />
+                </TouchableOpacity>
+              </View>
+              {toDos[key].edit ? (
+                <TextInput
+                  style={styles.editinput}
+                  onSubmitEditing={addToDo}
+                  onChangeText={onChangeText}
+                  returnKeyType="done"
+                  value={editvalue}
+                  placeholder="수정할 내용을 입력해주세요"
+                />
+              ) : null}
             </View>
           ) : null
         )}
@@ -159,6 +187,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "white",
   },
+  textinput: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginBottom: 20,
+  },
   input: {
     backgroundColor: "white",
     paddingVertical: 15,
@@ -168,8 +202,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 18,
   },
+  editinput: {
+    backgroundColor: "white",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+  },
   yestoDo: {
-    flexDirection: "row",
+    flexDirection: "column",
+    alignContent: "center",
     justifyContent: "space-around",
     backgroundColor: theme.grey,
     marginBottom: 10,
@@ -178,7 +219,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   nottoDo: {
-    flexDirection: "row",
+    flexDirection: "column",
+    alignContent: "center",
     justifyContent: "space-around",
     opacity: 1,
     marginBottom: 10,
